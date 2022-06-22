@@ -12,8 +12,7 @@
 
 #import "Public/FLTFirebaseAuthPlugin.h"
 
-NSString *const kFLTFirebaseAuthChannelName =
-    @"plugins.flutter.io/firebase_auth";
+NSString *const kFLTFirebaseAuthChannelName = @"plugins.flutter.io/firebase_auth";
 
 // Provider type keys.
 NSString *const kSignInMethodPassword = @"password";
@@ -61,8 +60,7 @@ NSString *const kErrMsgInvalidCredential =
 
   NSObject<FlutterBinaryMessenger> *_binaryMessenger;
   NSMutableDictionary<NSString *, FlutterEventChannel *> *_eventChannels;
-  NSMutableDictionary<NSString *, NSObject<FlutterStreamHandler> *>
-      *_streamHandlers;
+  NSMutableDictionary<NSString *, NSObject<FlutterStreamHandler> *> *_streamHandlers;
   NSData *_apnsToken;
 }
 
@@ -72,8 +70,7 @@ NSString *const kErrMsgInvalidCredential =
   self = [super init];
   if (self) {
     [[FLTFirebasePluginRegistry sharedInstance] registerFirebasePlugin:self];
-    _credentials =
-        [NSMutableDictionary<NSNumber *, FIRAuthCredential *> dictionary];
+    _credentials = [NSMutableDictionary<NSNumber *, FIRAuthCredential *> dictionary];
     _binaryMessenger = messenger;
     _eventChannels = [NSMutableDictionary dictionary];
     _streamHandlers = [NSMutableDictionary dictionary];
@@ -85,8 +82,7 @@ NSString *const kErrMsgInvalidCredential =
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:kFLTFirebaseAuthChannelName
                                   binaryMessenger:[registrar messenger]];
-  FLTFirebaseAuthPlugin *instance =
-      [[FLTFirebaseAuthPlugin alloc] init:registrar.messenger];
+  FLTFirebaseAuthPlugin *instance = [[FLTFirebaseAuthPlugin alloc] init:registrar.messenger];
 
   [registrar addMethodCallDelegate:instance channel:channel];
 
@@ -109,29 +105,24 @@ NSString *const kErrMsgInvalidCredential =
     [channel setStreamHandler:nil];
   }
   [self->_eventChannels removeAllObjects];
-  for (NSObject<FlutterStreamHandler> *handler in self->_streamHandlers
-           .allValues) {
+  for (NSObject<FlutterStreamHandler> *handler in self->_streamHandlers.allValues) {
     [handler onCancelWithArguments:nil];
   }
   [self->_streamHandlers removeAllObjects];
 
-  if (completion != nil)
-    completion();
+  if (completion != nil) completion();
 }
 
-- (void)detachFromEngineForRegistrar:
-    (NSObject<FlutterPluginRegistrar> *)registrar {
+- (void)detachFromEngineForRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   [self cleanupWithCompletion:nil];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call
-                  result:(FlutterResult)flutterResult {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)flutterResult {
   FLTFirebaseMethodCallErrorBlock errorBlock =
-      ^(NSString *_Nullable code, NSString *_Nullable message,
-        NSDictionary *_Nullable details, NSError *_Nullable error) {
+      ^(NSString *_Nullable code, NSString *_Nullable message, NSDictionary *_Nullable details,
+        NSError *_Nullable error) {
         if (code == nil) {
-          NSDictionary *errorDetails =
-              [FLTFirebaseAuthPlugin getNSDictionaryFromNSError:error];
+          NSDictionary *errorDetails = [FLTFirebaseAuthPlugin getNSDictionaryFromNSError:error];
           [self storeAuthCredentialIfPresent:error];
           code = errorDetails[kArgumentCode];
           message = errorDetails[@"message"];
@@ -167,100 +158,77 @@ NSString *const kErrMsgInvalidCredential =
   };
 
   FLTFirebaseMethodCallResult *methodCallResult =
-      [FLTFirebaseMethodCallResult createWithSuccess:successBlock
-                                       andErrorBlock:errorBlock];
+      [FLTFirebaseMethodCallResult createWithSuccess:successBlock andErrorBlock:errorBlock];
 
   [self ensureAPNSTokenSetting];
 
   if ([@"Auth#registerIdTokenListener" isEqualToString:call.method]) {
-    [self registerIdTokenListener:call.arguments
-             withMethodCallResult:methodCallResult];
+    [self registerIdTokenListener:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#registerAuthStateListener" isEqualToString:call.method]) {
-    [self registerAuthStateListener:call.arguments
-               withMethodCallResult:methodCallResult];
+    [self registerAuthStateListener:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#applyActionCode" isEqualToString:call.method]) {
     [self applyActionCode:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#checkActionCode" isEqualToString:call.method]) {
     [self checkActionCode:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#confirmPasswordReset" isEqualToString:call.method]) {
-    [self confirmPasswordReset:call.arguments
-          withMethodCallResult:methodCallResult];
-  } else if ([@"Auth#createUserWithEmailAndPassword"
-                 isEqualToString:call.method]) {
-    [self createUserWithEmailAndPassword:call.arguments
-                    withMethodCallResult:methodCallResult];
+    [self confirmPasswordReset:call.arguments withMethodCallResult:methodCallResult];
+  } else if ([@"Auth#createUserWithEmailAndPassword" isEqualToString:call.method]) {
+    [self createUserWithEmailAndPassword:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#fetchSignInMethodsForEmail" isEqualToString:call.method]) {
-    [self fetchSignInMethodsForEmail:call.arguments
-                withMethodCallResult:methodCallResult];
+    [self fetchSignInMethodsForEmail:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#sendPasswordResetEmail" isEqualToString:call.method]) {
-    [self sendPasswordResetEmail:call.arguments
-            withMethodCallResult:methodCallResult];
+    [self sendPasswordResetEmail:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#sendSignInLinkToEmail" isEqualToString:call.method]) {
-    [self sendSignInLinkToEmail:call.arguments
-           withMethodCallResult:methodCallResult];
+    [self sendSignInLinkToEmail:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithCredential" isEqualToString:call.method]) {
-    [self signInWithCredential:call.arguments
-          withMethodCallResult:methodCallResult];
+    [self signInWithCredential:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#setLanguageCode" isEqualToString:call.method]) {
     [self setLanguageCode:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#setSettings" isEqualToString:call.method]) {
     [self setSettings:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInAnonymously" isEqualToString:call.method]) {
-    [self signInAnonymously:call.arguments
-        withMethodCallResult:methodCallResult];
+    [self signInAnonymously:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithCustomToken" isEqualToString:call.method]) {
-    [self signInWithCustomToken:call.arguments
-           withMethodCallResult:methodCallResult];
+    [self signInWithCustomToken:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithEmailAndPassword" isEqualToString:call.method]) {
-    [self signInWithEmailAndPassword:call.arguments
-                withMethodCallResult:methodCallResult];
+    [self signInWithEmailAndPassword:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithEmailLink" isEqualToString:call.method]) {
-    [self signInWithEmailLink:call.arguments
-         withMethodCallResult:methodCallResult];
+    [self signInWithEmailLink:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signOut" isEqualToString:call.method]) {
     [self signOut:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#useEmulator" isEqualToString:call.method]) {
     [self useEmulator:call.arguments withMethodCallResult:methodCallResult];
-  }  else if ([@"Auth#verifyPasswordResetCode" isEqualToString:call.method]) {
+  } else if ([@"Auth#verifyPasswordResetCode" isEqualToString:call.method]) {
     [self verifyPasswordResetCode:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithAuthProvider" isEqualToString:call.method]) {
-    [self signInWithAuthProvider:call.arguments
-            withMethodCallResult:methodCallResult];
+    [self signInWithAuthProvider:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#verifyPhoneNumber" isEqualToString:call.method]) {
-    [self verifyPhoneNumber:call.arguments
-        withMethodCallResult:methodCallResult];
+    [self verifyPhoneNumber:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#delete" isEqualToString:call.method]) {
     [self userDelete:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#getIdToken" isEqualToString:call.method]) {
     [self userGetIdToken:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#linkWithCredential" isEqualToString:call.method]) {
-    [self userLinkWithCredential:call.arguments
-            withMethodCallResult:methodCallResult];
-  } else if ([@"User#reauthenticateUserWithCredential"
-                 isEqualToString:call.method]) {
+    [self userLinkWithCredential:call.arguments withMethodCallResult:methodCallResult];
+  } else if ([@"User#reauthenticateUserWithCredential" isEqualToString:call.method]) {
     [self userReauthenticateUserWithCredential:call.arguments
                           withMethodCallResult:methodCallResult];
   } else if ([@"User#reload" isEqualToString:call.method]) {
     [self userReload:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#sendEmailVerification" isEqualToString:call.method]) {
-    [self userSendEmailVerification:call.arguments
-               withMethodCallResult:methodCallResult];
+    [self userSendEmailVerification:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#unlink" isEqualToString:call.method]) {
     [self userUnlink:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#updateEmail" isEqualToString:call.method]) {
     [self userUpdateEmail:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#updatePassword" isEqualToString:call.method]) {
-    [self userUpdatePassword:call.arguments
-        withMethodCallResult:methodCallResult];
+    [self userUpdatePassword:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#updatePhoneNumber" isEqualToString:call.method]) {
-    [self userUpdatePhoneNumber:call.arguments
-           withMethodCallResult:methodCallResult];
+    [self userUpdatePhoneNumber:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#updateProfile" isEqualToString:call.method]) {
-    [self userUpdateProfile:call.arguments
-        withMethodCallResult:methodCallResult];
+    [self userUpdateProfile:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"User#verifyBeforeUpdateEmail" isEqualToString:call.method]) {
-    [self userVerifyBeforeUpdateEmail:call.arguments
-                 withMethodCallResult:methodCallResult];
+    [self userVerifyBeforeUpdateEmail:call.arguments withMethodCallResult:methodCallResult];
   } else {
     methodCallResult.success(FlutterMethodNotImplemented);
   }
@@ -273,12 +241,11 @@ NSString *const kErrMsgInvalidCredential =
             openURL:(nonnull NSURL *)url
             options:(nonnull NSDictionary<NSString *, id> *)options {
   // [END new_delegate]
-  return [self
-            application:application
-                openURL:url
-      // [START new_options]
-      sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
-             annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+  return [self application:application
+                   openURL:url
+         // [START new_options]
+         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
 }
 // [END new_options]
 
@@ -310,8 +277,7 @@ NSString *const kErrMsgInvalidCredential =
   return kFLTFirebaseAuthChannelName;
 }
 
-- (NSDictionary *_Nonnull)pluginConstantsForFIRApp:
-    (FIRApp *_Nonnull)firebaseApp {
+- (NSDictionary *_Nonnull)pluginConstantsForFIRApp:(FIRApp *_Nonnull)firebaseApp {
   FIRAuth *auth = [FIRAuth authWithApp:firebaseApp];
   return @{
     @"APP_LANGUAGE_CODE" : (id)[auth languageCode] ?: [NSNull null],
@@ -323,8 +289,7 @@ NSString *const kErrMsgInvalidCredential =
 
 #pragma mark - Firebase Auth API
 
-- (void)applyActionCode:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)applyActionCode:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   [auth applyActionCode:arguments[kArgumentCode]
              completion:^(NSError *_Nullable error) {
@@ -336,53 +301,46 @@ NSString *const kErrMsgInvalidCredential =
              }];
 }
 
-- (void)checkActionCode:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)checkActionCode:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
-  [auth
-      checkActionCode:arguments[kArgumentCode]
-           completion:^(FIRActionCodeInfo *_Nullable info,
-                        NSError *_Nullable error) {
-             if (error != nil) {
-               result.error(nil, nil, nil, error);
-             } else {
-               NSMutableDictionary *actionCodeResultDict =
-                   [NSMutableDictionary dictionary];
-               NSMutableDictionary *dataDict = [NSMutableDictionary dictionary];
-
-               if (info.email != nil) {
-                 dataDict[@"email"] = info.email;
-               }
-
-               if (info.previousEmail != nil) {
-                 dataDict[@"previousEmail"] = info.previousEmail;
-               }
-
-               if (info.operation == FIRActionCodeOperationPasswordReset) {
-                 actionCodeResultDict[@"operation"] = @1;
-               } else if (info.operation == FIRActionCodeOperationVerifyEmail) {
-                 actionCodeResultDict[@"operation"] = @2;
-               } else if (info.operation ==
-                          FIRActionCodeOperationRecoverEmail) {
-                 actionCodeResultDict[@"operation"] = @3;
-               } else if (info.operation == FIRActionCodeOperationEmailLink) {
-                 actionCodeResultDict[@"operation"] = @4;
-               } else if (info.operation ==
-                          FIRActionCodeOperationVerifyAndChangeEmail) {
-                 actionCodeResultDict[@"operation"] = @5;
-               } else if (info.operation ==
-                          FIRActionCodeOperationRevertSecondFactorAddition) {
-                 actionCodeResultDict[@"operation"] = @6;
+  [auth checkActionCode:arguments[kArgumentCode]
+             completion:^(FIRActionCodeInfo *_Nullable info, NSError *_Nullable error) {
+               if (error != nil) {
+                 result.error(nil, nil, nil, error);
                } else {
-                 // Unknown / Error.
-                 actionCodeResultDict[@"operation"] = @0;
+                 NSMutableDictionary *actionCodeResultDict = [NSMutableDictionary dictionary];
+                 NSMutableDictionary *dataDict = [NSMutableDictionary dictionary];
+
+                 if (info.email != nil) {
+                   dataDict[@"email"] = info.email;
+                 }
+
+                 if (info.previousEmail != nil) {
+                   dataDict[@"previousEmail"] = info.previousEmail;
+                 }
+
+                 if (info.operation == FIRActionCodeOperationPasswordReset) {
+                   actionCodeResultDict[@"operation"] = @1;
+                 } else if (info.operation == FIRActionCodeOperationVerifyEmail) {
+                   actionCodeResultDict[@"operation"] = @2;
+                 } else if (info.operation == FIRActionCodeOperationRecoverEmail) {
+                   actionCodeResultDict[@"operation"] = @3;
+                 } else if (info.operation == FIRActionCodeOperationEmailLink) {
+                   actionCodeResultDict[@"operation"] = @4;
+                 } else if (info.operation == FIRActionCodeOperationVerifyAndChangeEmail) {
+                   actionCodeResultDict[@"operation"] = @5;
+                 } else if (info.operation == FIRActionCodeOperationRevertSecondFactorAddition) {
+                   actionCodeResultDict[@"operation"] = @6;
+                 } else {
+                   // Unknown / Error.
+                   actionCodeResultDict[@"operation"] = @0;
+                 }
+
+                 actionCodeResultDict[@"data"] = dataDict;
+
+                 result.success(actionCodeResultDict);
                }
-
-               actionCodeResultDict[@"data"] = dataDict;
-
-               result.success(actionCodeResultDict);
-             }
-           }];
+             }];
 }
 
 - (void)confirmPasswordReset:(id)arguments
@@ -466,8 +424,7 @@ NSString *const kErrMsgInvalidCredential =
 - (void)signInWithCredential:(id)arguments
         withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
-  FIRAuthCredential *credential =
-      [self getFIRAuthCredentialFromArguments:arguments];
+  FIRAuthCredential *credential = [self getFIRAuthCredentialFromArguments:arguments];
 
   if (credential == nil) {
     result.error(kErrCodeInvalidCredential, kErrMsgInvalidCredential, nil, nil);
@@ -478,19 +435,15 @@ NSString *const kErrMsgInvalidCredential =
                   completion:^(FIRAuthDataResult *authResult, NSError *error) {
                     if (error != nil) {
                       NSDictionary *userInfo = [error userInfo];
-                      NSError *underlyingError =
-                          [userInfo objectForKey:NSUnderlyingErrorKey];
+                      NSError *underlyingError = [userInfo objectForKey:NSUnderlyingErrorKey];
 
                       NSDictionary *firebaseDictionary =
-                          underlyingError.userInfo
-                              [@"FIRAuthErrorUserInfoDeserializedResponseKey"];
+                          underlyingError.userInfo[@"FIRAuthErrorUserInfoDeserializedResponseKey"];
 
-                      if (firebaseDictionary != nil &&
-                          firebaseDictionary[@"message"] != nil) {
+                      if (firebaseDictionary != nil && firebaseDictionary[@"message"] != nil) {
                         // error from firebase-ios-sdk is buried in underlying
                         // error.
-                        result.error(nil, firebaseDictionary[@"message"], nil,
-                                     nil);
+                        result.error(nil, firebaseDictionary[@"message"], nil, nil);
                       } else {
                         result.error(nil, nil, nil, error);
                       }
@@ -502,52 +455,41 @@ NSString *const kErrMsgInvalidCredential =
 
 - (void)signInWithAuthProvider:(id)arguments
           withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
-
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
-  self.authProvider =
-      [FIROAuthProvider providerWithProviderID:arguments[@"signInProvider"]];
+  self.authProvider = [FIROAuthProvider providerWithProviderID:arguments[@"signInProvider"]];
 
   [self.authProvider
       getCredentialWithUIDelegate:nil
                        completion:^(FIRAuthCredential *_Nullable credential,
                                     NSError *_Nullable error) {
                          if (error) {
-                           result.error(kErrCodeInvalidCredential,
-                                        kErrMsgInvalidCredential, nil, nil);
+                           result.error(kErrCodeInvalidCredential, kErrMsgInvalidCredential, nil,
+                                        nil);
                            return;
                          }
                          if (credential) {
                            [auth
                                signInWithCredential:credential
-                                         completion:^(
-                                             FIRAuthDataResult *authResult,
-                                             NSError *error) {
+                                         completion:^(FIRAuthDataResult *authResult,
+                                                      NSError *error) {
                                            if (error != nil) {
-                                             NSDictionary *userInfo =
-                                                 [error userInfo];
+                                             NSDictionary *userInfo = [error userInfo];
                                              NSError *underlyingError =
-                                                 [userInfo
-                                                     objectForKey:
-                                                         NSUnderlyingErrorKey];
+                                                 [userInfo objectForKey:NSUnderlyingErrorKey];
 
                                              NSDictionary *firebaseDictionary =
-                                                 underlyingError.userInfo
-                                                     [@"FIRAuthErrorUserInfoDes"
-                                                      @"erializedResponseKey"];
+                                                 underlyingError.userInfo[@"FIRAuthErrorUserInfoDes"
+                                                                          @"erializedResponseKey"];
 
                                              if (firebaseDictionary != nil &&
-                                                 firebaseDictionary
-                                                         [@"message"] != nil) {
+                                                 firebaseDictionary[@"message"] != nil) {
                                                // error from firebase-ios-sdk is
                                                // buried in underlying error.
-                                               result.error(nil,
-                                                            firebaseDictionary
-                                                                [@"message"],
+                                               result.error(nil, firebaseDictionary[@"message"],
                                                             nil, nil);
                                              } else {
-                                               result.error(nil, nil, nil,
-                                                            error);
+                                               result.error(nil, nil, nil, error);
                                              }
                                            } else {
                                              result.success(authResult);
@@ -557,8 +499,7 @@ NSString *const kErrMsgInvalidCredential =
                        }];
 }
 
-- (void)setLanguageCode:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)setLanguageCode:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   NSString *languageCode = arguments[@"languageCode"];
 
@@ -571,27 +512,23 @@ NSString *const kErrMsgInvalidCredential =
   result.success(@{@"languageCode" : auth.languageCode});
 }
 
-- (void)setSettings:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)setSettings:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   if ([[arguments allKeys] containsObject:@"userAccessGroup"] &&
       ![arguments[@"userAccessGroup"] isEqual:[NSNull null]]) {
     BOOL useUserAccessGroupSuccessful;
     NSError *useUserAccessGroupErrorPtr;
-    useUserAccessGroupSuccessful =
-        [auth useUserAccessGroup:arguments[@"userAccessGroup"]
-                           error:&useUserAccessGroupErrorPtr];
+    useUserAccessGroupSuccessful = [auth useUserAccessGroup:arguments[@"userAccessGroup"]
+                                                      error:&useUserAccessGroupErrorPtr];
     if (!useUserAccessGroupSuccessful) {
       return result.error(nil, nil, nil, useUserAccessGroupErrorPtr);
     }
   }
 
 #if TARGET_OS_IPHONE
-  if ([[arguments allKeys]
-          containsObject:@"appVerificationDisabledForTesting"] &&
-      ![arguments[@"appVerificationDisabledForTesting"]
-          isEqual:[NSNull null]]) {
+  if ([[arguments allKeys] containsObject:@"appVerificationDisabledForTesting"] &&
+      ![arguments[@"appVerificationDisabledForTesting"] isEqual:[NSNull null]]) {
     auth.settings.appVerificationDisabledForTesting =
         [arguments[@"appVerificationDisabledForTesting"] boolValue];
   }
@@ -608,8 +545,7 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   [auth signInWithCustomToken:arguments[kArgumentToken]
-                   completion:^(FIRAuthDataResult *_Nullable authResult,
-                                NSError *_Nullable error) {
+                   completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
                      if (error != nil) {
                        result.error(nil, nil, nil, error);
                      } else {
@@ -623,8 +559,7 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   [auth signInWithEmail:arguments[kArgumentEmail]
                password:arguments[@"password"]
-             completion:^(FIRAuthDataResult *_Nullable authResult,
-                          NSError *_Nullable error) {
+             completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
                if (error != nil) {
                  result.error(nil, nil, nil, error);
                } else {
@@ -638,8 +573,7 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   [auth signInWithEmail:arguments[kArgumentEmail]
                    link:arguments[@"emailLink"]
-             completion:^(FIRAuthDataResult *_Nullable authResult,
-                          NSError *_Nullable error) {
+             completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
                if (error != nil) {
                  result.error(nil, nil, nil, error);
                } else {
@@ -648,8 +582,7 @@ NSString *const kErrMsgInvalidCredential =
              }];
 }
 
-- (void)signOut:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)signOut:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   if (auth.currentUser == nil) {
@@ -667,11 +600,9 @@ NSString *const kErrMsgInvalidCredential =
   }
 }
 
-- (void)useEmulator:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)useEmulator:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
-  [auth useEmulatorWithHost:arguments[@"host"]
-                       port:[arguments[@"port"] integerValue]];
+  [auth useEmulatorWithHost:arguments[@"host"] port:[arguments[@"port"] integerValue]];
   result.success(nil);
 }
 
@@ -680,19 +611,16 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   [auth verifyPasswordResetCode:arguments[kArgumentCode]
-                     completion:^(NSString *_Nullable email,
-                                  NSError *_Nullable error) {
+                     completion:^(NSString *_Nullable email, NSError *_Nullable error) {
                        if (error != nil) {
                          result.error(nil, nil, nil, error);
                        } else {
-                         result.success(
-                             @{kArgumentEmail : (id)email ?: [NSNull null]});
+                         result.success(@{kArgumentEmail : (id)email ?: [NSNull null]});
                        }
                      }];
 }
 
-- (void)userDelete:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userDelete:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -709,8 +637,7 @@ NSString *const kErrMsgInvalidCredential =
   }];
 }
 
-- (void)userGetIdToken:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userGetIdToken:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -723,49 +650,35 @@ NSString *const kErrMsgInvalidCredential =
 
   [currentUser
       getIDTokenResultForcingRefresh:forceRefresh
-                          completion:^(FIRAuthTokenResult *tokenResult,
-                                       NSError *error) {
+                          completion:^(FIRAuthTokenResult *tokenResult, NSError *error) {
                             if (error != nil) {
                               result.error(nil, nil, nil, error);
                               return;
                             }
 
                             if (tokenOnly) {
-                              result.success(@{
-                                kArgumentToken : (id)tokenResult.token
-                                    ?: [NSNull null]
-                              });
+                              result.success(
+                                  @{kArgumentToken : (id)tokenResult.token ?: [NSNull null]});
                             } else {
                               long expirationTimestamp =
-                                  (long)[tokenResult.expirationDate
-                                             timeIntervalSince1970] *
-                                  1000;
+                                  (long)[tokenResult.expirationDate timeIntervalSince1970] * 1000;
                               long authTimestamp =
-                                  (long)[tokenResult
-                                             .authDate timeIntervalSince1970] *
-                                  1000;
+                                  (long)[tokenResult.authDate timeIntervalSince1970] * 1000;
                               long issuedAtTimestamp =
-                                  (long)[tokenResult.issuedAtDate
-                                             timeIntervalSince1970] *
-                                  1000;
+                                  (long)[tokenResult.issuedAtDate timeIntervalSince1970] * 1000;
 
                               NSMutableDictionary *tokenData =
-                                  [[NSMutableDictionary alloc]
-                                      initWithDictionary:@{
-                                        @"authTimestamp" : @(authTimestamp),
-                                        @"claims" : tokenResult.claims,
-                                        @"expirationTimestamp" :
-                                            @(expirationTimestamp),
-                                        @"issuedAtTimestamp" :
-                                            @(issuedAtTimestamp),
-                                        @"signInProvider" :
-                                                (id)tokenResult.signInProvider
-                                            ?: [NSNull null],
-                                        @"signInSecondFactor" : (
-                                            id)tokenResult.signInSecondFactor
-                                            ?: [NSNull null],
-                                        kArgumentToken : tokenResult.token,
-                                      }];
+                                  [[NSMutableDictionary alloc] initWithDictionary:@{
+                                    @"authTimestamp" : @(authTimestamp),
+                                    @"claims" : tokenResult.claims,
+                                    @"expirationTimestamp" : @(expirationTimestamp),
+                                    @"issuedAtTimestamp" : @(issuedAtTimestamp),
+                                    @"signInProvider" : (id)tokenResult.signInProvider
+                                        ?: [NSNull null],
+                                    @"signInSecondFactor" : (id)tokenResult.signInSecondFactor
+                                        ?: [NSNull null],
+                                    kArgumentToken : tokenResult.token,
+                                  }];
 
                               result.success(tokenData);
                             }
@@ -782,27 +695,24 @@ NSString *const kErrMsgInvalidCredential =
     return;
   }
 
-  FIRAuthCredential *credential =
-      [self getFIRAuthCredentialFromArguments:arguments];
+  FIRAuthCredential *credential = [self getFIRAuthCredentialFromArguments:arguments];
   if (credential == nil) {
     result.error(kErrCodeInvalidCredential, kErrMsgInvalidCredential, nil, nil);
     return;
   }
 
-  [currentUser
-      linkWithCredential:credential
-              completion:^(FIRAuthDataResult *authResult, NSError *error) {
-                if (error != nil) {
-                  result.error(nil, nil, nil, error);
-                } else {
-                  result.success(authResult);
-                }
-              }];
+  [currentUser linkWithCredential:credential
+                       completion:^(FIRAuthDataResult *authResult, NSError *error) {
+                         if (error != nil) {
+                           result.error(nil, nil, nil, error);
+                         } else {
+                           result.success(authResult);
+                         }
+                       }];
 }
 
 - (void)userReauthenticateUserWithCredential:(id)arguments
-                        withMethodCallResult:
-                            (FLTFirebaseMethodCallResult *)result {
+                        withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   FIRUser *currentUser = auth.currentUser;
@@ -811,16 +721,14 @@ NSString *const kErrMsgInvalidCredential =
     return;
   }
 
-  FIRAuthCredential *credential =
-      [self getFIRAuthCredentialFromArguments:arguments];
+  FIRAuthCredential *credential = [self getFIRAuthCredentialFromArguments:arguments];
   if (credential == nil) {
     result.error(kErrCodeInvalidCredential, kErrMsgInvalidCredential, nil, nil);
     return;
   }
 
   [currentUser reauthenticateWithCredential:credential
-                                 completion:^(FIRAuthDataResult *authResult,
-                                              NSError *error) {
+                                 completion:^(FIRAuthDataResult *authResult, NSError *error) {
                                    if (error != nil) {
                                      result.error(nil, nil, nil, error);
                                    } else {
@@ -829,8 +737,7 @@ NSString *const kErrMsgInvalidCredential =
                                  }];
 }
 
-- (void)userReload:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userReload:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -858,19 +765,17 @@ NSString *const kErrMsgInvalidCredential =
 
   FIRActionCodeSettings *actionCodeSettings =
       [self getFIRActionCodeSettingsFromArguments:arguments];
-  [currentUser
-      sendEmailVerificationWithActionCodeSettings:actionCodeSettings
-                                       completion:^(NSError *_Nullable error) {
-                                         if (error != nil) {
-                                           result.error(nil, nil, nil, error);
-                                         } else {
-                                           result.success(nil);
-                                         }
-                                       }];
+  [currentUser sendEmailVerificationWithActionCodeSettings:actionCodeSettings
+                                                completion:^(NSError *_Nullable error) {
+                                                  if (error != nil) {
+                                                    result.error(nil, nil, nil, error);
+                                                  } else {
+                                                    result.success(nil);
+                                                  }
+                                                }];
 }
 
-- (void)userUnlink:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userUnlink:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -884,31 +789,28 @@ NSString *const kErrMsgInvalidCredential =
                 if (error != nil) {
                   result.error(nil, nil, nil, error);
                 } else {
-                  [auth.currentUser
-                      reloadWithCompletion:^(NSError *_Nullable reloadError) {
-                        if (reloadError != nil) {
-                          result.error(nil, nil, nil, reloadError);
-                        } else {
-                          // Note: On other SDKs `unlinkFromProvider` returns an
-                          // AuthResult instance, whereas the iOS SDK currently
-                          // does not, so we manualy construct a Dart
-                          // representation of one here.
-                          result.success(@{
-                            @"additionalUserInfo" : [NSNull null],
-                            @"authCredential" : [NSNull null],
-                            @"user" : auth.currentUser
-                                ? [FLTFirebaseAuthPlugin
-                                      getNSDictionaryFromUser:auth.currentUser]
-                                : [NSNull null],
-                          });
-                        }
-                      }];
+                  [auth.currentUser reloadWithCompletion:^(NSError *_Nullable reloadError) {
+                    if (reloadError != nil) {
+                      result.error(nil, nil, nil, reloadError);
+                    } else {
+                      // Note: On other SDKs `unlinkFromProvider` returns an
+                      // AuthResult instance, whereas the iOS SDK currently
+                      // does not, so we manualy construct a Dart
+                      // representation of one here.
+                      result.success(@{
+                        @"additionalUserInfo" : [NSNull null],
+                        @"authCredential" : [NSNull null],
+                        @"user" : auth.currentUser
+                            ? [FLTFirebaseAuthPlugin getNSDictionaryFromUser:auth.currentUser]
+                            : [NSNull null],
+                      });
+                    }
+                  }];
                 }
               }];
 }
 
-- (void)userUpdateEmail:(id)arguments
-    withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userUpdateEmail:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -916,21 +818,20 @@ NSString *const kErrMsgInvalidCredential =
     return;
   }
 
-  [currentUser
-      updateEmail:arguments[kArgumentNewEmail]
-       completion:^(NSError *_Nullable error) {
-         if (error != nil) {
-           result.error(nil, nil, nil, error);
-         } else {
-           [currentUser reloadWithCompletion:^(NSError *_Nullable reloadError) {
-             if (reloadError != nil) {
-               result.error(nil, nil, nil, reloadError);
-             } else {
-               result.success(auth.currentUser);
-             }
-           }];
-         }
-       }];
+  [currentUser updateEmail:arguments[kArgumentNewEmail]
+                completion:^(NSError *_Nullable error) {
+                  if (error != nil) {
+                    result.error(nil, nil, nil, error);
+                  } else {
+                    [currentUser reloadWithCompletion:^(NSError *_Nullable reloadError) {
+                      if (reloadError != nil) {
+                        result.error(nil, nil, nil, reloadError);
+                      } else {
+                        result.success(auth.currentUser);
+                      }
+                    }];
+                  }
+                }];
 }
 
 - (void)userUpdatePassword:(id)arguments
@@ -947,8 +848,7 @@ NSString *const kErrMsgInvalidCredential =
                      if (error != nil) {
                        result.error(nil, nil, nil, error);
                      } else {
-                       [currentUser reloadWithCompletion:^(
-                                        NSError *_Nullable reloadError) {
+                       [currentUser reloadWithCompletion:^(NSError *_Nullable reloadError) {
                          if (reloadError != nil) {
                            result.error(nil, nil, nil, reloadError);
                          } else {
@@ -970,8 +870,7 @@ NSString *const kErrMsgInvalidCredential =
     return;
   }
 
-  FIRAuthCredential *credential =
-      [self getFIRAuthCredentialFromArguments:arguments];
+  FIRAuthCredential *credential = [self getFIRAuthCredentialFromArguments:arguments];
   if (credential == nil) {
     result.error(kErrCodeInvalidCredential, kErrMsgInvalidCredential, nil, nil);
     return;
@@ -983,8 +882,7 @@ NSString *const kErrMsgInvalidCredential =
                          if (error != nil) {
                            result.error(nil, nil, nil, error);
                          } else {
-                           [currentUser reloadWithCompletion:^(
-                                            NSError *_Nullable reloadError) {
+                           [currentUser reloadWithCompletion:^(NSError *_Nullable reloadError) {
                              if (reloadError != nil) {
                                result.error(nil, nil, nil, reloadError);
                              } else {
@@ -1001,8 +899,7 @@ NSString *const kErrMsgInvalidCredential =
 #endif
 }
 
-- (void)userUpdateProfile:(id)arguments
-     withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)userUpdateProfile:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
   FIRUser *currentUser = auth.currentUser;
   if (currentUser == nil) {
@@ -1011,8 +908,7 @@ NSString *const kErrMsgInvalidCredential =
   }
 
   NSDictionary *profileUpdates = arguments[@"profile"];
-  FIRUserProfileChangeRequest *changeRequest =
-      [currentUser profileChangeRequest];
+  FIRUserProfileChangeRequest *changeRequest = [currentUser profileChangeRequest];
 
   if (profileUpdates[@"displayName"] != nil) {
     if ([profileUpdates[@"displayName"] isEqual:[NSNull null]]) {
@@ -1029,8 +925,7 @@ NSString *const kErrMsgInvalidCredential =
       // When doing so, Dart will properly receive `null` anyway.
       changeRequest.photoURL = [NSURL URLWithString:@""];
     } else {
-      changeRequest.photoURL =
-          [NSURL URLWithString:profileUpdates[@"photoURL"]];
+      changeRequest.photoURL = [NSURL URLWithString:profileUpdates[@"photoURL"]];
     }
   }
 
@@ -1062,16 +957,15 @@ NSString *const kErrMsgInvalidCredential =
   NSString *newEmail = arguments[kArgumentNewEmail];
   FIRActionCodeSettings *actionCodeSettings =
       [self getFIRActionCodeSettingsFromArguments:arguments];
-  [currentUser
-      sendEmailVerificationBeforeUpdatingEmail:newEmail
-                            actionCodeSettings:actionCodeSettings
-                                    completion:^(NSError *error) {
-                                      if (error != nil) {
-                                        result.error(nil, nil, nil, error);
-                                      } else {
-                                        result.success(nil);
-                                      }
-                                    }];
+  [currentUser sendEmailVerificationBeforeUpdatingEmail:newEmail
+                                     actionCodeSettings:actionCodeSettings
+                                             completion:^(NSError *error) {
+                                               if (error != nil) {
+                                                 result.error(nil, nil, nil, error);
+                                               } else {
+                                                 result.success(nil);
+                                               }
+                                             }];
 }
 
 - (void)registerIdTokenListener:(id)arguments
@@ -1079,12 +973,10 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   NSString *name =
-      [NSString stringWithFormat:@"%@/id-token/%@", kFLTFirebaseAuthChannelName,
-                                 auth.app.name];
+      [NSString stringWithFormat:@"%@/id-token/%@", kFLTFirebaseAuthChannelName, auth.app.name];
 
-  FlutterEventChannel *channel =
-      [FlutterEventChannel eventChannelWithName:name
-                                binaryMessenger:_binaryMessenger];
+  FlutterEventChannel *channel = [FlutterEventChannel eventChannelWithName:name
+                                                           binaryMessenger:_binaryMessenger];
 
   FLTIdTokenChannelStreamHandler *handler =
       [[FLTIdTokenChannelStreamHandler alloc] initWithAuth:auth];
@@ -1101,11 +993,9 @@ NSString *const kErrMsgInvalidCredential =
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
   NSString *name =
-      [NSString stringWithFormat:@"%@/auth-state/%@",
-                                 kFLTFirebaseAuthChannelName, auth.app.name];
-  FlutterEventChannel *channel =
-      [FlutterEventChannel eventChannelWithName:name
-                                binaryMessenger:_binaryMessenger];
+      [NSString stringWithFormat:@"%@/auth-state/%@", kFLTFirebaseAuthChannelName, auth.app.name];
+  FlutterEventChannel *channel = [FlutterEventChannel eventChannelWithName:name
+                                                           binaryMessenger:_binaryMessenger];
 
   FLTAuthStateChannelStreamHandler *handler =
       [[FLTAuthStateChannelStreamHandler alloc] initWithAuth:auth];
@@ -1117,11 +1007,9 @@ NSString *const kErrMsgInvalidCredential =
   result.success(name);
 }
 
-- (void)signInAnonymously:(id)arguments
-     withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)signInAnonymously:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
-  [auth signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult,
-                                          NSError *error) {
+  [auth signInAnonymouslyWithCompletion:^(FIRAuthDataResult *authResult, NSError *error) {
     if (error != nil) {
       result.error(nil, nil, nil, error);
     } else {
@@ -1130,8 +1018,7 @@ NSString *const kErrMsgInvalidCredential =
   }];
 }
 
-- (void)verifyPhoneNumber:(id)arguments
-     withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
+- (void)verifyPhoneNumber:(id)arguments withMethodCallResult:(FLTFirebaseMethodCallResult *)result {
 #if TARGET_OS_OSX
   NSLog(@"The Firebase Phone Authentication provider is not supported on the "
         @"MacOS platform.");
@@ -1139,16 +1026,13 @@ NSString *const kErrMsgInvalidCredential =
 #else
   FIRAuth *auth = [self getFIRAuthFromArguments:arguments];
 
-  NSString *name =
-      [NSString stringWithFormat:@"%@/phone/%@", kFLTFirebaseAuthChannelName,
-                                 [NSUUID UUID].UUIDString];
-  FlutterEventChannel *channel =
-      [FlutterEventChannel eventChannelWithName:name
-                                binaryMessenger:_binaryMessenger];
+  NSString *name = [NSString
+      stringWithFormat:@"%@/phone/%@", kFLTFirebaseAuthChannelName, [NSUUID UUID].UUIDString];
+  FlutterEventChannel *channel = [FlutterEventChannel eventChannelWithName:name
+                                                           binaryMessenger:_binaryMessenger];
 
   FLTPhoneNumberVerificationStreamHandler *handler =
-      [[FLTPhoneNumberVerificationStreamHandler alloc] initWithAuth:auth
-                                                          arguments:arguments];
+      [[FLTPhoneNumberVerificationStreamHandler alloc] initWithAuth:auth arguments:arguments];
   [channel setStreamHandler:handler];
 
   [_eventChannels setObject:channel forKey:name];
@@ -1162,8 +1046,7 @@ NSString *const kErrMsgInvalidCredential =
 
 - (void)storeAuthCredentialIfPresent:(NSError *)error {
   if ([error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey] != nil) {
-    FIRAuthCredential *authCredential =
-        [error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey];
+    FIRAuthCredential *authCredential = [error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey];
     // We temporarily store the non-serializable credential so the
     // Dart API can consume these at a later time.
     NSNumber *authCredentialHash = @([authCredential hash]);
@@ -1189,8 +1072,7 @@ NSString *const kErrMsgInvalidCredential =
     // Codes are in the format "ERROR_SOME_NAME", converting below to the format
     // required in Dart. ERROR_SOME_NAME -> SOME_NAME
     NSString *firebaseErrorCode = [error userInfo][FIRAuthErrorUserInfoNameKey];
-    code = [firebaseErrorCode stringByReplacingOccurrencesOfString:@"ERROR_"
-                                                        withString:@""];
+    code = [firebaseErrorCode stringByReplacingOccurrencesOfString:@"ERROR_" withString:@""];
     // SOME_NAME -> SOME-NAME
     code = [code stringByReplacingOccurrencesOfString:@"_" withString:@"-"];
     // SOME-NAME -> some-name
@@ -1205,15 +1087,13 @@ NSString *const kErrMsgInvalidCredential =
   NSMutableDictionary *additionalData = [NSMutableDictionary dictionary];
   // additionalData.email
   if ([error userInfo][FIRAuthErrorUserInfoEmailKey] != nil) {
-    additionalData[kArgumentEmail] =
-        [error userInfo][FIRAuthErrorUserInfoEmailKey];
+    additionalData[kArgumentEmail] = [error userInfo][FIRAuthErrorUserInfoEmailKey];
   }
   // additionalData.authCredential
   if ([error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey] != nil) {
-    FIRAuthCredential *authCredential =
-        [error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey];
-    additionalData[@"authCredential"] = [FLTFirebaseAuthPlugin
-        getNSDictionaryFromAuthCredential:authCredential];
+    FIRAuthCredential *authCredential = [error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey];
+    additionalData[@"authCredential"] =
+        [FLTFirebaseAuthPlugin getNSDictionaryFromAuthCredential:authCredential];
   }
 
   // Manual message overrides to ensure messages/codes matche other platforms.
@@ -1243,10 +1123,8 @@ NSString *const kErrMsgInvalidCredential =
 
 - (FIRActionCodeSettings *_Nullable)getFIRActionCodeSettingsFromArguments:
     (NSDictionary *)arguments {
-  NSDictionary *actionCodeSettingsDictionary =
-      arguments[kArgumentActionCodeSettings];
-  if (actionCodeSettingsDictionary == nil ||
-      [actionCodeSettingsDictionary isEqual:[NSNull null]]) {
+  NSDictionary *actionCodeSettingsDictionary = arguments[kArgumentActionCodeSettings];
+  if (actionCodeSettingsDictionary == nil || [actionCodeSettingsDictionary isEqual:[NSNull null]]) {
     return nil;
   }
 
@@ -1255,21 +1133,17 @@ NSString *const kErrMsgInvalidCredential =
   NSDictionary *androidSettings = actionCodeSettingsDictionary[@"android"];
 
   // URL - required
-  actionCodeSettings.URL =
-      [NSURL URLWithString:actionCodeSettingsDictionary[@"url"]];
+  actionCodeSettings.URL = [NSURL URLWithString:actionCodeSettingsDictionary[@"url"]];
 
   // Dynamic Link Domain - optional
   if (actionCodeSettingsDictionary[@"dynamicLinkDomain"] != nil &&
-      ![actionCodeSettingsDictionary[@"dynamicLinkDomain"]
-          isEqual:[NSNull null]]) {
-    actionCodeSettings.dynamicLinkDomain =
-        actionCodeSettingsDictionary[@"dynamicLinkDomain"];
+      ![actionCodeSettingsDictionary[@"dynamicLinkDomain"] isEqual:[NSNull null]]) {
+    actionCodeSettings.dynamicLinkDomain = actionCodeSettingsDictionary[@"dynamicLinkDomain"];
   }
 
   // Handle code in app - optional
   if (actionCodeSettingsDictionary[@"handleCodeInApp"] != nil &&
-      ![actionCodeSettingsDictionary[@"handleCodeInApp"]
-          isEqual:[NSNull null]]) {
+      ![actionCodeSettingsDictionary[@"handleCodeInApp"] isEqual:[NSNull null]]) {
     actionCodeSettings.handleCodeInApp =
         [actionCodeSettingsDictionary[@"handleCodeInApp"] boolValue];
   }
@@ -1281,16 +1155,14 @@ NSString *const kErrMsgInvalidCredential =
         ![androidSettings[@"installApp"] isEqual:[NSNull null]]) {
       installIfNotAvailable = [androidSettings[@"installApp"] boolValue];
     }
-    [actionCodeSettings
-        setAndroidPackageName:androidSettings[@"packageName"]
-        installIfNotAvailable:installIfNotAvailable
-               minimumVersion:androidSettings[@"minimumVersion"]];
+    [actionCodeSettings setAndroidPackageName:androidSettings[@"packageName"]
+                        installIfNotAvailable:installIfNotAvailable
+                               minimumVersion:androidSettings[@"minimumVersion"]];
   }
 
   // iOS settings - optional
   if (iOSSettings != nil && ![iOSSettings isEqual:[NSNull null]]) {
-    if (iOSSettings[@"bundleId"] != nil &&
-        ![iOSSettings[@"bundleId"] isEqual:[NSNull null]]) {
+    if (iOSSettings[@"bundleId"] != nil && ![iOSSettings[@"bundleId"] isEqual:[NSNull null]]) {
       [actionCodeSettings setIOSBundleID:iOSSettings[@"bundleId"]];
     }
   }
@@ -1298,8 +1170,7 @@ NSString *const kErrMsgInvalidCredential =
   return actionCodeSettings;
 }
 
-- (FIRAuthCredential *_Nullable)getFIRAuthCredentialFromArguments:
-    (NSDictionary *)arguments {
+- (FIRAuthCredential *_Nullable)getFIRAuthCredentialFromArguments:(NSDictionary *)arguments {
   NSDictionary *credentialDictionary = arguments[kArgumentCredential];
 
   // If the credential dictionary contains a token, it means a native one has
@@ -1317,10 +1188,9 @@ NSString *const kErrMsgInvalidCredential =
   NSString *idToken = credentialDictionary[kArgumentIdToken] == [NSNull null]
                           ? nil
                           : credentialDictionary[kArgumentIdToken];
-  NSString *accessToken =
-      credentialDictionary[kArgumentAccessToken] == [NSNull null]
-          ? nil
-          : credentialDictionary[kArgumentAccessToken];
+  NSString *accessToken = credentialDictionary[kArgumentAccessToken] == [NSNull null]
+                              ? nil
+                              : credentialDictionary[kArgumentAccessToken];
   NSString *rawNonce = credentialDictionary[kArgumentRawNonce] == [NSNull null]
                            ? nil
                            : credentialDictionary[kArgumentRawNonce];
@@ -1345,14 +1215,12 @@ NSString *const kErrMsgInvalidCredential =
 
   // Google Auth
   if ([signInMethod isEqualToString:kSignInMethodGoogle]) {
-    return [FIRGoogleAuthProvider credentialWithIDToken:idToken
-                                            accessToken:accessToken];
+    return [FIRGoogleAuthProvider credentialWithIDToken:idToken accessToken:accessToken];
   }
 
   // Twitter Auth
   if ([signInMethod isEqualToString:kSignInMethodTwitter]) {
-    return [FIRTwitterAuthProvider credentialWithToken:accessToken
-                                                secret:secret];
+    return [FIRTwitterAuthProvider credentialWithToken:accessToken secret:secret];
   }
 
   // GitHub Auth
@@ -1365,8 +1233,7 @@ NSString *const kErrMsgInvalidCredential =
 #if TARGET_OS_IPHONE
     NSString *verificationId = credentialDictionary[kArgumentVerificationId];
     NSString *smsCode = credentialDictionary[kArgumentSmsCode];
-    return [[FIRPhoneAuthProvider
-        providerWithAuth:[self getFIRAuthFromArguments:arguments]]
+    return [[FIRPhoneAuthProvider providerWithAuth:[self getFIRAuthFromArguments:arguments]]
         credentialWithVerificationID:verificationId
                     verificationCode:smsCode];
 #else
@@ -1385,25 +1252,21 @@ NSString *const kErrMsgInvalidCredential =
                                           accessToken:accessToken];
   }
 
-  NSLog(
-      @"Support for an auth provider with identifier '%@' is not implemented.",
-      signInMethod);
+  NSLog(@"Support for an auth provider with identifier '%@' is not implemented.", signInMethod);
   return nil;
 }
 
-- (NSDictionary *)getNSDictionaryFromAuthResult:
-    (FIRAuthDataResult *)authResult {
+- (NSDictionary *)getNSDictionaryFromAuthResult:(FIRAuthDataResult *)authResult {
   return @{
-    @"additionalUserInfo" : [self
-        getNSDictionaryFromAdditionalUserInfo:authResult.additionalUserInfo],
-    @"authCredential" : [FLTFirebaseAuthPlugin
-        getNSDictionaryFromAuthCredential:authResult.credential],
+    @"additionalUserInfo" :
+        [self getNSDictionaryFromAdditionalUserInfo:authResult.additionalUserInfo],
+    @"authCredential" :
+        [FLTFirebaseAuthPlugin getNSDictionaryFromAuthCredential:authResult.credential],
     @"user" : [FLTFirebaseAuthPlugin getNSDictionaryFromUser:authResult.user],
   };
 }
 
-- (id)getNSDictionaryFromAdditionalUserInfo:
-    (FIRAdditionalUserInfo *)additionalUserInfo {
+- (id)getNSDictionaryFromAdditionalUserInfo:(FIRAdditionalUserInfo *)additionalUserInfo {
   if (additionalUserInfo == nil) {
     return [NSNull null];
   }
@@ -1434,8 +1297,7 @@ NSString *const kErrMsgInvalidCredential =
   NSString *photoURL = nil;
   if (userInfo.photoURL != nil) {
     photoURL = userInfo.photoURL.absoluteString;
-    if ([photoURL length] == 0)
-      photoURL = nil;
+    if ([photoURL length] == 0) photoURL = nil;
   }
   return @{
     kArgumentProviderId : userInfo.providerID,
@@ -1450,18 +1312,15 @@ NSString *const kErrMsgInvalidCredential =
 + (NSMutableDictionary *)getNSDictionaryFromUser:(FIRUser *)user {
   // FIRUser inherits from FIRUserInfo, so we can re-use
   // `getNSDictionaryFromUserInfo` method.
-  NSMutableDictionary *userData =
-      [[self getNSDictionaryFromUserInfo:user] mutableCopy];
+  NSMutableDictionary *userData = [[self getNSDictionaryFromUserInfo:user] mutableCopy];
   NSMutableDictionary *metadata = [NSMutableDictionary dictionary];
 
   // metadata.creationTimestamp as milliseconds
-  long creationDate =
-      (long)([user.metadata.creationDate timeIntervalSince1970] * 1000);
+  long creationDate = (long)([user.metadata.creationDate timeIntervalSince1970] * 1000);
   metadata[@"creationTime"] = @(creationDate);
 
   // metadata.lastSignInTimestamp as milliseconds
-  long lastSignInDate =
-      (long)([user.metadata.lastSignInDate timeIntervalSince1970] * 1000);
+  long lastSignInDate = (long)([user.metadata.lastSignInDate timeIntervalSince1970] * 1000);
   metadata[@"lastSignInTime"] = @(lastSignInDate);
 
   // metadata
@@ -1471,8 +1330,7 @@ NSString *const kErrMsgInvalidCredential =
   NSMutableArray<NSDictionary<NSString *, NSString *> *> *providerData =
       [NSMutableArray arrayWithCapacity:user.providerData.count];
   for (id<FIRUserInfo> userInfo in user.providerData) {
-    [providerData
-        addObject:[FLTFirebaseAuthPlugin getNSDictionaryFromUserInfo:userInfo]];
+    [providerData addObject:[FLTFirebaseAuthPlugin getNSDictionaryFromUserInfo:userInfo]];
   }
   userData[@"providerData"] = providerData;
 
