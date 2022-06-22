@@ -1,5 +1,5 @@
-Project: /docs/_project.yaml
-Book: /docs/_book.yaml
+Project: /docs/\_project.yaml
+Book: /docs/\_book.yaml
 
 <link rel="stylesheet" type="text/css" href="/styles/docs.css" />
 
@@ -24,7 +24,7 @@ Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https:
 > change to Google, due to Firebase Authentications concept of trusted providers. You can find out more about
 > this [here](https://groups.google.com/g/firebase-talk/c/ms_NVQem_Cw/m/8g7BFk1IAAAJ).
 
-* {iOS+ and Android}
+- {iOS+ and Android}
 
   On native platforms, a 3rd party library is required to trigger the authentication flow.
 
@@ -53,7 +53,7 @@ Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https:
   }
   ```
 
-* {Web}
+- {Web}
 
   On the web, the Firebase SDK provides support for automatically handling the authentication flow using your Firebase project. For example:
 
@@ -91,7 +91,6 @@ Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https:
   }
   ```
 
-
 ## Facebook
 
 Before getting started setup your [Facebook Developer App](https://developers.facebook.com/apps/) and follow the setup process to enable Facebook Login.
@@ -99,7 +98,7 @@ Before getting started setup your [Facebook Developer App](https://developers.fa
 Ensure the "Facebook" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 with the Facebook App ID and Secret set.
 
-* {iOS+ and Android}
+- {iOS+ and Android}
 
   On native platforms, a 3rd party library is required to both install the Facebook SDK and trigger the authentication flow.
 
@@ -123,7 +122,7 @@ with the Facebook App ID and Secret set.
   }
   ```
 
-* {Web}
+- {Web}
 
   On the web, the Firebase SDK provides support for automatically handling the authentication flow using the
   Facebook application details provided on the Firebase console. For example:
@@ -168,10 +167,9 @@ Note: Firebase will not set the `User.emailVerified` property
 to `true` if your user logs in with Facebook. Should your user login using a provider that verifies email (e.g. Google sign-in) then this will be set to true.
 For further information, see this [issue](https://github.com/firebase/flutterfire/issues/4612#issuecomment-782107867).
 
-
 ## Apple
 
-* {iOS+ and Android}
+- {iOS+ and Android}
 
   Before you begin [configure Sign In with Apple](/docs/auth/ios/apple#configure-sign-in-with-apple)
   and [enable Apple as a sign-in provider](/docs/auth/ios/apple#enable-apple-as-a-sign-in-provider).
@@ -241,7 +239,7 @@ For further information, see this [issue](https://github.com/firebase/flutterfir
   }
   ```
 
-* {Web}
+- {Web}
 
   Before you begin [configure Sign In with Apple](/docs/auth/web/apple#configure-sign-in-with-apple)
   and [enable Apple as a sign-in provider](/docs/auth/web/apple#enable-apple-as-a-sign-in-provider).
@@ -263,13 +261,12 @@ For further information, see this [issue](https://github.com/firebase/flutterfir
   An alternative is to use `signInWithRedirect`. In that case the browser will navigate away from your app
   and you have to use `getRedirectResult` to check for authentication results during app startup.
 
-
 ## Twitter
 
 Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers)
 with an API Key and API Secret set.
 
-* {iOS+ and Android}
+- {iOS+ and Android}
 
   On native platforms, a 3rd party library is required to both install the Twitter SDK and trigger the authentication flow.
 
@@ -307,7 +304,7 @@ with an API Key and API Secret set.
   }
   ```
 
-* {Web}
+- {Web}
 
   On the web, the Twitter SDK provides support for automatically handling the authentication flow using the
   Twitter application details provided on the Firebase console. Ensure that the callback URL in the Firebase console is added
@@ -332,39 +329,30 @@ with an API Key and API Secret set.
   }
   ```
 
-
 ## GitHub
 
 Ensure that you have setup an OAuth App from your [GitHub Developer Settings](https://github.com/settings/developers) and
 that the "GitHub" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers)
 with the Client ID and Secret are set, with the callback URL set in the GitHub app.
 
-* {iOS+ and Android}
+- {iOS+ and Android}
 
-  On native platforms, a 3rd party library is required to both install the GitHub SDK and trigger the authentication flow.
+For native platforms, you need to add the `google-services.json` and `GoogleService-Info.plist`.
 
-  Install the [`github_sign_in`](https://pub.dev/packages/github_sign_in) plugin:
+For iOS, add the custom URL scheme as [described on the iOS guide](https://firebase.google.com/docs/auth/ios/github-auth#handle_the_sign-in_flow_with_the_firebase_sdk) step 1.
 
-  ```yaml title="pubspec.yaml"
-  dependencies:
-    github_sign_in: ^0.0.5-dev.4
-  ```
+```dart
+import 'package:github_sign_in/github_sign_in.dart';
 
-  You will need to populate the `GitHubSignIn` instance with your GitHub Client ID, GitHub Client Secret and also a Redirect URL (Firebase callback url).
-  Once complete trigger the sign-in flow, create a GitHub credential and sign the user in:
+Future<UserCredential> signInWithGitHub() async {
+  // Create a new provider
+  GithubAuthProvider githubProvider = GithubAuthProvider();
 
-  ```dart
-  import 'package:github_sign_in/github_sign_in.dart';
+  return await _auth.signInWithAuthProvider(githubProvider);
+}
+```
 
-  Future<UserCredential> signInWithGitHub() async {
-    // Create a new provider
-    GithubAuthProvider githubProvider = GithubAuthProvider();
-
-    return await _auth.signInWithAuthProvider(githubProvider);
-  }
-  ```
-
-* {Web}
+- {Web}
 
   On the web, the GitHub SDK provides support for automatically handling the authentication flow using the
   GitHub application details provided on the Firebase console. Ensure that the callback URL in the Firebase console is added
