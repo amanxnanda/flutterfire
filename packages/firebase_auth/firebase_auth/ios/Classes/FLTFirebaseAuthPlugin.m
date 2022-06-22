@@ -221,8 +221,8 @@ NSString *const kErrMsgInvalidCredential =
     [self signOut:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#useEmulator" isEqualToString:call.method]) {
     [self useEmulator:call.arguments withMethodCallResult:methodCallResult];
-  } else if ([@"Auth#useEmulator" isEqualToString:call.method]) {
-    [self useEmulator:call.arguments withMethodCallResult:methodCallResult];
+  }  else if ([@"Auth#verifyPasswordResetCode" isEqualToString:call.method]) {
+    [self verifyPasswordResetCode:call.arguments withMethodCallResult:methodCallResult];
   } else if ([@"Auth#signInWithAuthProvider" isEqualToString:call.method]) {
     [self signInWithAuthProvider:call.arguments
             withMethodCallResult:methodCallResult];
