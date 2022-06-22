@@ -15,8 +15,7 @@
 #import <firebase_core/FLTFirebasePlugin.h>
 
 @interface FLTFirebaseAuthPlugin
-    : FLTFirebasePlugin <FlutterPlugin, FLTFirebasePlugin,
-                         UIApplicationDelegate>
+    : FLTFirebasePlugin <FlutterPlugin, FLTFirebasePlugin>
 
 + (id)getNSDictionaryFromAuthCredential:(FIRAuthCredential *)authCredential;
 + (NSDictionary *)getNSDictionaryFromUserInfo:(id<FIRUserInfo>)userInfo;
