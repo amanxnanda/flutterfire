@@ -5,17 +5,24 @@ description:
 version: 4.2.6
 homepage: https://firebase.google.com/docs/dynamic-links
 repository: https://github.com/firebase/flutterfire/tree/master/packages/firebase_dynamic_links
+publish_to: "none"
 
 false_secrets:
   - example/**
 
 environment:
-  sdk: '>=2.16.0 <3.0.0'
+  sdk: ">=2.16.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"
 
 dependencies:
-  firebase_core: ^1.10.0
-  firebase_core_platform_interface: ^4.4.1
+  firebase_core:
+    git:
+      url: git@github.com-mine:amanxnanda/flutterfire.git
+      path: packages/firebase_core/firebase_core
+  firebase_core_platform_interface: 
+    git:
+      url: git@github.com-mine:amanxnanda/flutterfire.git
+      path: packages/firebase_dynamic_links/firebase_core_platform_interface
   firebase_dynamic_links_platform_interface: ^0.2.3+4
   flutter:
     sdk: flutter
