@@ -5,6 +5,7 @@ description: Flutter plugin for Firebase Auth, enabling Android and iOS
 homepage: https://firebase.google.com/docs/auth
 repository: https://github.com/firebase/flutterfire/tree/master/packages/firebase_auth/firebase_auth
 version: 3.3.20
+publish_to: "none"
 
 false_secrets:
   - example/**
@@ -15,9 +16,14 @@ environment:
 
 dependencies:
   firebase_auth_platform_interface: ^6.2.8
-  firebase_auth_web: ^3.3.17
-  firebase_core: ^1.10.0
-  firebase_core_platform_interface: ^4.4.1
+  firebase_core:
+    git:
+      url: git@github.com-mine:amanxnanda/flutterfire.git
+      path: packages/firebase_core/firebase_core
+  firebase_core_platform_interface:
+    git:
+      url: git@github.com-mine:amanxnanda/flutterfire.git
+      path: packages/firebase_auth/firebase_core_platform_interface
   flutter:
     sdk: flutter
   meta: ^1.3.0
